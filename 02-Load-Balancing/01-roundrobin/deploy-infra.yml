@@ -1,0 +1,50 @@
+version: "3.6"
+
+x-default-deploy: &default-deploy
+  replicas: 1
+  update_config:
+    parallelism: 1
+    delay: 10s
+    order: stop-first
+
+services:
+  haproxy-service:
+    image: haproxytech/haproxy-debian:latest
+    deploy:
+      <<: *default-deploy
+      replicas: 1
+      placement:
+        constraints: [node.hostname == node1]
+      resources:
+        reservations:
+          memory: 512m
+        limits:
+          memory: 512m
+    logging:
+      options:
+        max-file: 3
+        max-size: 10m
+    dns: 127.0.0.11
+    networks:
+      - haproxy-network
+    ports:
+      - target: 80
+        published: 10087
+        protocol: tcp
+        mode: host
+    configs:
+      - source: haproxy_config
+        target: /etc/haproxy/haproxy.cfg
+        mode: 0444
+
+networks:
+  haproxy-network:
+    name:  haproxy-network
+    external: true
+
+
+configs:
+  # ROUNDROBIN
+  haproxy_config:
+    file: ./haproxy.cfg
+

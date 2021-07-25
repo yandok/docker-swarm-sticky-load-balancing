@@ -1,0 +1,23 @@
+version: "3.6"
+
+services:
+  web:
+    image: nginx
+    deploy:
+      replicas: 10
+      update_config:
+        parallelism: 3
+        delay: 2s
+        order: start-first
+      resources:
+        reservations:
+          memory: 50m
+        limits:
+          memory: 100m
+    networks:
+      - demo-overlay
+
+networks:
+  demo-overlay:
+    name: demo-overlay
+    external: true

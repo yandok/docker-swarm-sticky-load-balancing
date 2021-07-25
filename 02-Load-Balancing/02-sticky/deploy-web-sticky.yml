@@ -1,0 +1,17 @@
+version: "3.6"
+
+services:
+  whoamisticky:
+    image: "traefik/whoami"
+    deploy:
+      replicas: 1
+      endpoint_mode: dnsrr
+    networks:
+      - haproxy-network
+
+networks:
+  haproxy-network:
+    name:  haproxy-network
+    external: true
+
+
